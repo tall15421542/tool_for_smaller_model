@@ -79,16 +79,13 @@ with open(args.inverted_file_path, 'r') as inverted_file:
             document = document_container.doc_dict.get(doc_id)
             document.term_vec.append(DocumentTerm(len(term_id_to_voc_pair_vec)-1, tf, tfidf))
             
-print("document number:", len(document_container.doc_dict))
 
 # random pick k
 document_container.setRandom(args.num_of_random_document)
 random_document_dict = document_container.getRandom()
-print(random_document_dict)
 
 # construct corresponding inverted file
 inverted_file_given_random_doc = InvertedFile(random_document_dict)
-print(inverted_file_given_random_doc)
 
 # build the map from oldId -> newId for document, voc
 doc_id_old_map_to_new = {}
@@ -98,7 +95,6 @@ for doc_id in random_doc_id_vec:
     doc_id_old_map_to_new[doc_id] = new_doc_id
     new_doc_id += 1
 
-print(doc_id_old_map_to_new)
 
 voc_id_old_map_to_new = {}
 new_voc_id = 1
@@ -110,23 +106,20 @@ for term_id in term_dict_given_random_doc.keys():
             voc_id_old_map_to_new[old_voc_id] = new_voc_id
             new_voc_id += 1
 
-print(voc_id_old_map_to_new)
 
 # build the map from newId -> oldId for document, voc
 doc_id_new_to_old_vec = [0] * len(doc_id_old_map_to_new)
 for item in doc_id_old_map_to_new.items():
     doc_id_new_to_old_vec[item[1]] = item[0]
 
-print(doc_id_new_to_old_vec)
 
 voc_id_new_to_old_vec = [0] * (len(voc_id_old_map_to_new) + 1)
 for item in voc_id_old_map_to_new.items():
     voc_id_new_to_old_vec[item[1]] = item[0]
 
-print(voc_id_new_to_old_vec)
 # output inverted file, voc_list, file_list corresponding to new id
 # inverted file
-with open('{}inverted_file_doc_{}'.format(args.output_model_dir, args.num_of_random_document), 'w') as output_inverted_file: 
+with open('{}inverted-file'.format(args.output_model_dir, args.num_of_random_document), 'w') as output_inverted_file: 
     term_dict_given_random_doc = inverted_file_given_random_doc.term_dict
     for item in term_dict_given_random_doc.items():
         old_voc_id_pair = term_id_to_voc_pair_vec[item[0]]
@@ -144,7 +137,7 @@ with open('{}file-list'.format(args.model_path)) as file_list_file:
     for line in lines:
         file_id_to_url_vec.append(line)
 
-with open('{}file_list_doc_{}'.format(args.output_model_dir, args.num_of_random_document), 'w') as file_list_file:
+with open('{}file-list'.format(args.output_model_dir, args.num_of_random_document), 'w') as file_list_file:
     for old_doc_id in doc_id_new_to_old_vec:
         file_list_file.write('{}\n'.format(file_id_to_url_vec[old_doc_id]))
 
@@ -155,6 +148,6 @@ with open('{}vocab.all'.format(args.model_path)) as vocal_list:
     for line in lines:
         voc_id_to_voc_vec.append(line)
 
-with open('{}vocal_doc_{}'.format(args.output_model_dir, args.num_of_random_document), 'w') as vocal_list_file:
+with open('{}vocab.all'.format(args.output_model_dir, args.num_of_random_document), 'w') as vocal_list_file:
     for old_voc_id in voc_id_new_to_old_vec:
         vocal_list_file.write('{}\n'.format(voc_id_to_voc_vec[old_voc_id]))
